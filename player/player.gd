@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 @export var speed = 300.0
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	var direction = Vector2.ZERO
 	
 	if Input.is_key_pressed(KEY_D): direction.x += 1

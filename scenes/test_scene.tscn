@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dvjy0v8lhtxdb"]
+[gd_scene load_steps=3 format=3 uid="uid://dvjy0v8lhtxdb"]
 
 [ext_resource type="PackedScene" uid="uid://cw8yp5kdjaodc" path="res://player/player.tscn" id="1_6e84v"]
+[ext_resource type="PackedScene" uid="uid://1noqm562x32s" path="res://character_body_2d.tscn" id="2_j8ivh"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -9,4 +10,6 @@ offset_right = 1152.0
 offset_bottom = 648.0
 
 [node name="player" parent="." instance=ExtResource("1_6e84v")]
-position = Vector2(562, 304)
+position = Vector2(502, 277)
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("2_j8ivh")]
