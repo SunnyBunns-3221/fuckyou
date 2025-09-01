@@ -13,3 +13,5 @@ offset_bottom = 685.0
 position = Vector2(502, 277)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_j8ivh")]
+collision_layer = 1
+collision_priority = 2.0

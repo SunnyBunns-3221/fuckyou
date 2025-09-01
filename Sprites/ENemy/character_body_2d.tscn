@@ -1,19 +1,33 @@
-[gd_scene load_steps=4 format=3 uid="uid://1noqm562x32s"]
+[gd_scene load_steps=5 format=3 uid="uid://1noqm562x32s"]
 
 [ext_resource type="Script" uid="uid://dhfmf5gam0a50" path="res://scripts/enemyfollow.gd" id="1_ij6vw"]
 [ext_resource type="Texture2D" uid="uid://cmmbqllilbtfb" path="res://Sprites/ENemy/Bigger.png" id="2_ghijl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qjeyg"]
-size = Vector2(92.5, 72.5)
+size = Vector2(95.25, 76.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8dy3e"]
+size = Vector2(95, 76)
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 2
+slide_on_ceiling = false
 script = ExtResource("1_ij6vw")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(47.9999, 52)
+position = Vector2(48, 53)
 scale = Vector2(0.189453, 0.207031)
 texture = ExtResource("2_ghijl")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(48.75, 36.75)
+position = Vector2(47.375, 37.75)
 shape = SubResource("RectangleShape2D_qjeyg")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(47.5, 38)
+shape = SubResource("RectangleShape2D_8dy3e")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

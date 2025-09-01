@@ -6,6 +6,7 @@
 size = Vector2(1, 1)
 
 [node name="player" type="CharacterBody2D"]
+slide_on_ceiling = false
 script = ExtResource("1_4flbx")
 
 [node name="ColorRect" type="ColorRect" parent="."]
