@@ -1,34 +1,48 @@
 extends CharacterBody2D
 
-@export var speed: float = 50.0
-@export var stop_time: float = 0.5
-@export var stop_distance: float = 20.0
-@onready var player: Node2D = get_parent().get_node("Player")
+@export var speed = 150.0
+@export var detection_range = 300.0
+@export var separation_distance = 40.0  # Distance to maintain from player
 
-var stop_timer: float = 0.0
+var player = null
+var touching_player = false
 
-func _physics_process(delta: float) -> void:
+func _ready():
+	player = get_tree().get_first_node_in_group("player")
+
+func _physics_process(delta):
 	if not player:
 		return
-
-	if stop_timer > 0.0:
-		stop_timer -= delta
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-
-	var to_player = player.global_position - global_position
-	var distance = to_player.length()
-
-	if distance > stop_distance:
-		var direction = to_player.normalized()
-		velocity = direction * speed
-
-		var collision = move_and_collide(velocity * delta)
-		if collision and collision.get_collider() == player:
-			velocity = Vector2.ZERO
-			stop_timer = stop_time
+	
+	var distance = global_position.distance_to(player.global_position)
+	
+	# If we're too close to player, move away
+	if distance < separation_distance:
+		var direction_away = (global_position - player.global_position).normalized()
+		velocity = direction_away * speed * 0.5  # Move away slower
+		touching_player = true
+		print("Too close - moving away from player")
+	# If we're in detection range but not too close, move towards
+	elif distance <= detection_range and not touching_player:
+		var direction_towards = (player.global_position - global_position).normalized()
+		velocity = direction_towards * speed
+		print("Following player - distance: ", distance)
 	else:
 		velocity = Vector2.ZERO
-
+		touching_player = false
+	
 	move_and_slide()
+
+func _on_area_entered(area):
+	if area.get_parent().has_method("take_damage"):
+		print("Enemy touched player!")
+		area.get_parent().take_damage()
+		touching_player = true
+		# Immediately move away
+		var direction_away = (global_position - player.global_position).normalized()
+		velocity = direction_away * speed
+
+func _on_area_exited(area):
+	if area.get_parent().has_method("take_damage"):
+		print("Enemy stopped touching player!")
+		touching_player = false

@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
 size = Vector2(1, 1)
 
-[node name="player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 slide_on_ceiling = false
 script = ExtResource("1_4flbx")
 
