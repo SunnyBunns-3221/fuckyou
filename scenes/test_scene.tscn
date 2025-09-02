@@ -8,6 +8,7 @@
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_right = 1191.0
 offset_bottom = 685.0
+color = Color(0.180005, 0.180005, 0.180005, 1)
 
 [node name="player" parent="." instance=ExtResource("1_6e84v")]
 position = Vector2(502, 277)

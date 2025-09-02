@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://cw8yp5kdjaodc"]
+[gd_scene load_steps=3 format=3 uid="uid://cw8yp5kdjaodc"]
 
 [ext_resource type="Script" uid="uid://bv6iquburfu5b" path="res://player/player.gd" id="1_4flbx"]
-[ext_resource type="PackedScene" uid="uid://cqe1alvoih527" path="res://projectile.tscn" id="2_rkbax"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
 size = Vector2(1, 1)
@@ -9,10 +8,11 @@ size = Vector2(1, 1)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 4
 collision_mask = 2
-motion_mode = 1
 slide_on_ceiling = false
 script = ExtResource("1_4flbx")
-projectile_scene = ExtResource("2_rkbax")
+speed = null
+health = null
+fire_rate = null
 
 [node name="ColorRect" type="ColorRect" parent="."]
 custom_minimum_size = Vector2(32, 32)
