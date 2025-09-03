@@ -9,11 +9,10 @@ extends CharacterBody2D
 @onready var health_bar = $ProgressBar
 @onready var nav_agent = $NavigationAgent2D
 
-
-enum State { PATROL, CHASE, RETURN, WAIT}
+enum State { PATROL, CHASE, RETURN, WAIT }
 
 var player = null
-var current_state =  State.PATROL
+var current_state = State.PATROL
 var touching_player = false
 var can_fire = true
 var vision_cone = null
@@ -26,6 +25,7 @@ var patrol_points = [
 	Vector2(429, 139)
 ]
 var patrol_index = 0
+
 func _ready():
 	player = get_tree().get_first_node_in_group("player")
 	vision_cone = $VisionCone
@@ -34,6 +34,9 @@ func _ready():
 	# Load projectile scene
 	if not projectile_scene:
 		projectile_scene = preload("res://Projectile.tscn")
+	
+	# Start patrol
+	start_patrol()
 
 func _physics_process(delta):
 	if not player:
@@ -51,23 +54,17 @@ func _physics_process(delta):
 	# Check if we can see the player
 	if vision_cone.can_see_target(player.global_position):
 		last_known_player_pos = player.global_position
-		
+		current_state = State.CHASE
 		chase_and_shoot()
 	else:
-		# If we can't see player, move to last known position
-		if current_state == State.CHASE and not vision_cone.can_see_targed(player.global_position):
+		# If we can't see player and we were chasing
+		if current_state == State.CHASE:
 			if not waiting_to_return:
 				waiting_to_return = true
 				current_state = State.WAIT
 				start_return_delay()
-				
-		
-
-		else:
-			velocity = Vector2.ZERO
 	
-		
-	
+	# Handle different states
 	match current_state:
 		State.PATROL:
 			patrol_behavior()
@@ -75,8 +72,11 @@ func _physics_process(delta):
 			return_to_patrol()
 		State.WAIT:
 			velocity = Vector2.ZERO
+		State.CHASE:
+			# Chase behavior is handled above
+			pass
+	
 	move_and_slide()
-
 
 func chase_and_shoot():
 	var distance = global_position.distance_to(player.global_position)
@@ -113,9 +113,14 @@ func fire_at_player():
 
 func on_player_spotted():
 	print("Enemy spotted player!")
+	current_state = State.CHASE
 
 func on_player_lost():
 	print("Enemy lost sight of player!")
+	if not waiting_to_return:
+		waiting_to_return = true
+		current_state = State.WAIT
+		start_return_delay()
 
 func take_damage(amount):
 	health -= amount
@@ -137,8 +142,7 @@ func _on_area_entered(area):
 func _on_area_exited(area):
 	if area.get_parent().has_method("take_damage"):
 		touching_player = false
-		
-		
+
 func test_wall_detection():
 	if not player:
 		return
@@ -160,33 +164,38 @@ func test_wall_detection():
 	else:
 		print("No wall detected between enemy and player")
 	print("========================")
+
 func start_patrol():
-	nav_agent.set_agent_position(patrol_points[patrol_index])
+	nav_agent.set_target_position(patrol_points[patrol_index])
 
 func patrol_behavior():
 	if nav_agent.is_navigation_finished():
-		patrol_index = (patrol_index+1) % patrol_points.size()
+		patrol_index = (patrol_index + 1) % patrol_points.size()
 		nav_agent.set_target_position(patrol_points[patrol_index])
 	
 	var next_pos = nav_agent.get_next_path_position()
-	velocity = (next_pos - global_position). normalized() * speed
+	velocity = (next_pos - global_position).normalized() * speed
+
 func return_to_patrol():
 	var closest_point = patrol_points[0]
 	var min_dist = global_position.distance_to(closest_point)
+	
 	for point in patrol_points:
-			var dist = global_position.distance_to(point)
-			if dist < min_dist:
-				min_dist = dist
-				closest_point = point
+		var dist = global_position.distance_to(point)
+		if dist < min_dist:
+			min_dist = dist
+			closest_point = point
+	
 	nav_agent.set_target_position(closest_point)
 	
 	var next_pos = nav_agent.get_next_path_position()
-	velocity = (next_pos - global_position).normalized()* speed
+	velocity = (next_pos - global_position).normalized() * speed
 	
 	if nav_agent.is_navigation_finished():
 		current_state = State.PATROL
 		patrol_index = patrol_points.find(closest_point)
 		nav_agent.set_target_position(patrol_points[patrol_index])
+
 func start_return_delay():
 	velocity = Vector2.ZERO  # Stop movement
 	await get_tree().create_timer(2.0).timeout

@@ -5,7 +5,7 @@ extends CharacterBody2D
 
 # Projectile system
 @export var projectile_scene: PackedScene
-@export var fire_rate = 0.2
+@export var fire_rate = 0.1
 @export var shoot_radius = 25.0
 var can_fire = true
 
