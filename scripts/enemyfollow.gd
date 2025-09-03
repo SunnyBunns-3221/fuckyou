@@ -6,6 +6,7 @@ extends CharacterBody2D
 @export var fire_rate = 1.0
 @export var projectile_scene: PackedScene
 @export var shoot_radius = 25.0  # Distance from center to spawn projectiles
+@onready var health_bar = $ProgressBar
 
 var player = null
 var touching_player = false
@@ -16,6 +17,7 @@ var last_known_player_pos = Vector2.ZERO
 func _ready():
 	player = get_tree().get_first_node_in_group("player")
 	vision_cone = $VisionCone
+	health_bar.value = health
 	
 	# Load projectile scene
 	if not projectile_scene:
@@ -95,6 +97,7 @@ func on_player_lost():
 func take_damage(amount):
 	health -= amount
 	print("Enemy took damage! Health: ", health)
+	health_bar.value = health
 	
 	modulate = Color.RED
 	await get_tree().create_timer(0.1).timeout
