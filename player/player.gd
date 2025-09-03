@@ -3,17 +3,20 @@ extends CharacterBody2D
 @export var speed = 300.0
 @export var health = 100
 
-# Projectile system - set this in the editor
+# Projectile system
 @export var projectile_scene: PackedScene
-@export var fire_rate = 0.2  # Seconds between shots
+@export var fire_rate = 0.2
+@export var shoot_radius = 25.0  # Distance from center to spawn projectiles
 var can_fire = true
 
 func _ready():
-	print("=== PLAYER DEBUG ===")
-	print("Player ready!")
-	print("Projectile scene: ", projectile_scene)
-	print("Can fire: ", can_fire)
-	print("==================")
+	# Load projectile scene
+	if not projectile_scene:
+		projectile_scene = preload("res://Projectile.tscn")
+	
+	# Debug: check player positioning
+	print("Player position: ", global_position)
+	print("Player collision shape position: ", $CollisionShape2D.position if $CollisionShape2D else "No collision shape")
 
 func _physics_process(delta):
 	# Movement (your existing code)
@@ -30,56 +33,40 @@ func _physics_process(delta):
 	
 	# Shooting
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and can_fire:
-		print("Mouse clicked! Attempting to fire...")
 		fire_projectile()
 
 func fire_projectile():
-	print("=== FIRE PROJECTILE DEBUG ===")
-	print("Can fire: ", can_fire)
-	print("Projectile scene: ", projectile_scene)
-	
 	if not projectile_scene:
-		print("ERROR: No projectile scene set in editor!")
 		return
-	
-	print("Projectile scene is valid!")
 	
 	# Get mouse position in world space
 	var mouse_pos = get_global_mouse_position()
 	var direction = (mouse_pos - global_position).normalized()
 	
-	print("Mouse position: ", mouse_pos)
-	print("Player position: ", global_position)
+	# Calculate spawn position on the circle boundary
+	# Use the actual center of the player's collision shape
+	var player_center = global_position
+	if $CollisionShape2D:
+		player_center = global_position + $CollisionShape2D.position
+	
+	var spawn_position = player_center + (direction * shoot_radius)
+	
+	print("Mouse pos: ", mouse_pos)
+	print("Player center: ", player_center)
 	print("Direction: ", direction)
-	
-	# Spawn projectile slightly away from player to avoid collision
-	var spawn_offset = direction * 35  # 35 pixels away from player center
-	var spawn_position = global_position + spawn_offset
-	
-	print("Spawn offset: ", spawn_offset)
 	print("Spawn position: ", spawn_position)
 	
 	# Create projectile
-	print("Creating projectile...")
 	var projectile = projectile_scene.instantiate()
-	print("Projectile created: ", projectile)
-	
-	print("Adding to scene...")
 	get_tree().current_scene.add_child(projectile)
-	print("Projectile added to scene!")
 	
-	# Initialize projectile at the offset position
-	print("Initializing projectile...")
-	projectile.initialize(spawn_position, direction)
-	print("Projectile initialized!")
+	# Initialize projectile with shooter reference
+	projectile.initialize(spawn_position, direction, self)
 	
 	# Fire rate cooldown
 	can_fire = false
-	print("Fire cooldown started...")
 	await get_tree().create_timer(fire_rate).timeout
 	can_fire = true
-	print("Fire cooldown ended!")
-	print("================================")
 
 # Your existing functions
 func take_damage(amount = 10):

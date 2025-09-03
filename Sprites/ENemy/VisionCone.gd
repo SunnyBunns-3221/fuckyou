@@ -1,0 +1,95 @@
+extends Area2D
+
+@export var vision_angle = 60.0  # Changed from 90 to 60 degrees (narrower)
+@export var vision_range = 350.0  # Changed from 200 to 350 pixels (longer)
+@export var vision_color = Color(1, 1, 0, 0.3)  # Yellow, semi-transparent
+
+var enemy = null
+var player = null
+var can_see_player = false
+var vision_direction = Vector2.RIGHT
+
+func _ready():
+	enemy = get_parent()
+	player = get_tree().get_first_node_in_group("player")
+	
+	# Create visual representation
+	create_vision_cone_visual()
+	
+	# Connect signals
+	area_entered.connect(_on_area_entered)
+	area_exited.connect(_on_area_exited)
+
+func create_vision_cone_visual():
+	var line = Line2D.new()
+	line.name = "VisionLine"
+	line.width = 2
+	line.default_color = vision_color
+	
+	var points = []
+	var angle_rad = deg_to_rad(vision_angle / 2)
+	
+	# Center point (enemy center)
+	points.append(Vector2.ZERO)
+	
+	# Left edge of cone
+	var left_angle = -angle_rad
+	points.append(Vector2(cos(left_angle) * vision_range, sin(left_angle) * vision_range))
+	
+	# Right edge of cone
+	var right_angle = angle_rad
+	points.append(Vector2(cos(right_angle) * vision_range, sin(right_angle) * vision_range))
+	
+	# Back to center
+	points.append(Vector2.ZERO)
+	
+	line.points = points
+	add_child(line)
+
+func update_vision_direction(new_direction):
+	vision_direction = new_direction.normalized()
+	rotation = vision_direction.angle()
+
+func can_see_target(target_pos):
+	if not enemy or not player:
+		return false
+	
+	var to_target = target_pos - enemy.global_position
+	var distance = to_target.length()
+	
+	if distance > vision_range:
+		return false
+	
+	var angle_to_target = vision_direction.angle_to(to_target)
+	var angle_diff = abs(rad_to_deg(angle_to_target))
+	
+	if angle_diff > vision_angle / 2:
+		return false
+	
+	return !is_blocked_by_wall(enemy.global_position, target_pos)
+
+func is_blocked_by_wall(from_pos, to_pos):
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsRayQueryParameters2D.create(from_pos, to_pos)
+	query.collision_mask = 4  # Layer for walls
+	
+	var result = space_state.intersect_ray(query)
+	
+	if result:
+		var distance_to_wall = from_pos.distance_to(result.position)
+		var distance_to_target = from_pos.distance_to(to_pos)
+		return distance_to_wall < distance_to_target
+	
+	return false
+
+func _on_area_entered(area):
+	if area.get_parent() and area.get_parent().is_in_group("player"):
+		can_see_player = true
+		if enemy.has_method("on_player_spotted"):
+			enemy.on_player_spotted()
+
+func _on_area_exited(area):
+	if area.get_parent() and area.get_parent().is_in_group("player"):
+		can_see_player = false
+		if enemy.has_method("on_player_lost"):
+			enemy.on_player_lost()

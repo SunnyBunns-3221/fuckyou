@@ -20,13 +20,10 @@ collision_layer = 1
 collision_priority = 2.0
 
 [node name="wall" parent="." instance=ExtResource("3_nd71p")]
-visibility_layer = 15
 position = Vector2(318, 315)
 
 [node name="wall2" parent="." instance=ExtResource("3_nd71p")]
-visibility_layer = 15
 position = Vector2(318, 251)
 
 [node name="wall3" parent="." instance=ExtResource("3_nd71p")]
-visibility_layer = 15
 position = Vector2(318, 187)
