@@ -6,20 +6,16 @@ extends CharacterBody2D
 # Projectile system
 @export var projectile_scene: PackedScene
 @export var fire_rate = 0.2
-@export var shoot_radius = 25.0  # Distance from center to spawn projectiles
+@export var shoot_radius = 25.0
 var can_fire = true
 
 func _ready():
 	# Load projectile scene
 	if not projectile_scene:
 		projectile_scene = preload("res://Projectile.tscn")
-	
-	# Debug: check player positioning
-	print("Player position: ", global_position)
-	print("Player collision shape position: ", $CollisionShape2D.position if $CollisionShape2D else "No collision shape")
 
 func _physics_process(delta):
-	# Movement (your existing code)
+	# Movement
 	var direction = Vector2.ZERO
 	if Input.is_key_pressed(KEY_D): direction.x += 1
 	if Input.is_key_pressed(KEY_A): direction.x -= 1
@@ -44,17 +40,7 @@ func fire_projectile():
 	var direction = (mouse_pos - global_position).normalized()
 	
 	# Calculate spawn position on the circle boundary
-	# Use the actual center of the player's collision shape
-	var player_center = global_position
-	if $CollisionShape2D:
-		player_center = global_position + $CollisionShape2D.position
-	
-	var spawn_position = player_center + (direction * shoot_radius)
-	
-	print("Mouse pos: ", mouse_pos)
-	print("Player center: ", player_center)
-	print("Direction: ", direction)
-	print("Spawn position: ", spawn_position)
+	var spawn_position = global_position + (direction * shoot_radius)
 	
 	# Create projectile
 	var projectile = projectile_scene.instantiate()
@@ -68,7 +54,6 @@ func fire_projectile():
 	await get_tree().create_timer(fire_rate).timeout
 	can_fire = true
 
-# Your existing functions
 func take_damage(amount = 10):
 	health -= amount
 	print("Player took damage! Health: ", health)

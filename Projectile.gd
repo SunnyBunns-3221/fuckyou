@@ -6,7 +6,7 @@ extends Area2D
 
 var direction = Vector2.ZERO
 var velocity = Vector2.ZERO
-var shooter = null  # Reference to who fired this projectile
+var shooter = null
 
 func _ready():
 	# Connect signals
@@ -33,7 +33,6 @@ func initialize(start_pos, dir, shooter_ref = null):
 func _on_body_entered(body):
 	# Ignore the shooter (don't damage them)
 	if body == shooter:
-		print("Projectile hit shooter - ignoring")
 		return
 	
 	# Hit enemy
@@ -51,7 +50,6 @@ func _on_body_entered(body):
 func _on_area_entered(area):
 	# Ignore the shooter
 	if area.get_parent() == shooter:
-		print("Projectile hit shooter area - ignoring")
 		return
 	
 	# Hit other areas (if needed)
