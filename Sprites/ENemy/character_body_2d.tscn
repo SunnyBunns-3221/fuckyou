@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://1noqm562x32s"]
+[gd_scene load_steps=6 format=3 uid="uid://1noqm562x32s"]
 
 [ext_resource type="Script" uid="uid://dhfmf5gam0a50" path="res://scripts/enemyfollow.gd" id="1_ij6vw"]
 [ext_resource type="Script" uid="uid://dkfpv2nchdr3d" path="res://Sprites/ENemy/VisionCone.gd" id="2_8dy3e"]
@@ -8,6 +8,11 @@ size = Vector2(31, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8dy3e"]
 size = Vector2(32, 32)
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_8dy3e"]
+vertices = PackedVector2Array(587.031, -277.18, 588.961, 280.297, -453.789, 312.672, -442.188, -296.797)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-452, -307, -464, 323, 599, 290, 597, -287)])
 
 [node name="Enemy" type="CharacterBody2D"]
 collision_layer = 2
@@ -47,6 +52,12 @@ offset_top = -47.0
 offset_right = 81.0
 offset_bottom = -20.0
 fill_mode = 1
+show_percentage = false
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_8dy3e")
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
