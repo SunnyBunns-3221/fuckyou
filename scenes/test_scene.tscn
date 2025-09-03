@@ -7,8 +7,9 @@
 [node name="Node2D" type="Node2D"]
 
 [node name="ColorRect" type="ColorRect" parent="."]
-offset_right = 1191.0
-offset_bottom = 685.0
+custom_minimum_size = Vector2(1920, 1080)
+offset_right = 1409.0
+offset_bottom = 798.0
 color = Color(0.180005, 0.180005, 0.180005, 1)
 
 [node name="player" parent="." instance=ExtResource("1_6e84v")]
