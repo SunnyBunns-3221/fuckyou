@@ -20,7 +20,7 @@ var current_animation = "idle"
 
 # Bobbing system
 var bob_amount = 4.0  # How many pixels to bob up/down
-var bob_speed = 20.0   # How fast the bob happens
+var bob_speed = 20.0   # How fast dthe bob happens
 var original_y = 0.0  # Store original Y position
 var bob_timer = 0.0   # Timer for bobbing
 
@@ -39,10 +39,20 @@ var dashcooldowntimer = 0.0
 @export var dashrechargedelay = 1
 var dashdelaytimer = 0.0
 
+@onready var healthbar = $Healthbar
+
+#deathscreen
+@onready var death_overlay = get_parent().get_node("CanvasLayer/DeathOverlay")
+@onready var death_label = get_parent().get_node("CanvasLayer/DeathLabel")
+
+
+
 
 func _ready():
 	# Store original Y position for bobbing
 	original_y = sprite.position.y
+	
+	healthbar.value = health
 	
 	# Load projectile scene
 	if not projectile_scene:
@@ -200,12 +210,15 @@ func fire_projectile():
 
 func take_damage(amount = 10):
 	health -= amount
+	healthbar.value = health
 	print("Player took damage! Health: ", health)
 	modulate = Color.RED
 	await get_tree().create_timer(0.2).timeout
 	modulate = Color.WHITE
 	if health <= 0:
 		print("Game Over!")
+		get_tree().paused = true
+		
 
 func teleport_to_door(new_position):
 	position = new_position
