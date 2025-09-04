@@ -154,6 +154,7 @@ scale = Vector2(32, 32)
 shape = SubResource("RectangleShape2D_onrkg")
 
 [node name="DashBar" type="ProgressBar" parent="."]
+self_modulate = Color(0.00940417, 0, 0.980523, 1)
 offset_left = -45.0
 offset_top = -65.0
 offset_right = 87.0
@@ -162,6 +163,7 @@ max_value = 5.0
 show_percentage = false
 
 [node name="Healthbar" type="ProgressBar" parent="."]
+self_modulate = Color(0.964064, 0, 0.281746, 1)
 offset_left = -52.0
 offset_top = -76.0
 offset_right = 97.0
