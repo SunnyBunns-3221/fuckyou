@@ -66,19 +66,19 @@ func can_see_target(target_pos):
 	var distance = to_target.length()
 	
 	if distance > vision_range:
-		print("Target too far: ", distance, " > ", vision_range)
+		#print("Target too far: ", distance, " > ", vision_range)
 		return false
 	
 	var angle_to_target = vision_direction.angle_to(to_target)
 	var angle_diff = abs(rad_to_deg(angle_to_target))
 	
 	if angle_diff > vision_angle / 2:
-		print("Target outside vision angle: ", angle_diff, " > ", vision_angle / 2)
+		#print("Target outside vision angle: ", angle_diff, " > ", vision_angle / 2)
 		return false
 	
 	# Check if there's a wall blocking the view
 	var wall_blocking = is_blocked_by_wall(enemy.global_position, target_pos)
-	print("Wall blocking vision: ", wall_blocking)
+	#print("Wall blocking vision: ", wall_blocking)
 	return !wall_blocking
 
 func is_blocked_by_wall(from_pos, to_pos):
@@ -86,32 +86,32 @@ func is_blocked_by_wall(from_pos, to_pos):
 	var query = PhysicsRayQueryParameters2D.create(from_pos, to_pos)
 	query.collision_mask = 4  # Layer 4 = walls
 	
-	print("=== WALL DETECTION DEBUG ===")
-	print("From position: ", from_pos)
-	print("To position: ", to_pos)
-	print("Collision mask: ", query.collision_mask)
+	#print("=== WALL DETECTION DEBUG ===")
+	#print("From position: ", from_pos)
+	#print("To position: ", to_pos)
+	#print("Collision mask: ", query.collision_mask)
 	
 	var result = space_state.intersect_ray(query)
 	
 	if result:
-		print("Wall hit at: ", result.position)
-		print("Wall collider: ", result.collider.name)
-		print("Wall collider layer: ", result.collider.collision_layer)
+		#print("Wall hit at: ", result.position)
+		#print("Wall collider: ", result.collider.name)
+		#print("Wall collider layer: ", result.collider.collision_layer)
 		
 		var distance_to_wall = from_pos.distance_to(result.position)
 		var distance_to_target = from_pos.distance_to(to_pos)
 		
-		print("Distance to wall: ", distance_to_wall)
-		print("Distance to target: ", distance_to_target)
+		#print("Distance to wall: ", distance_to_wall)
+		#print("Distance to target: ", distance_to_target)
 		
 		# If wall is closer than target, vision is blocked
 		var blocking = distance_to_wall < distance_to_target
-		print("Wall blocking vision: ", blocking)
-		print("================================")
+		#print("Wall blocking vision: ", blocking)
+		#print("================================")
 		return blocking
 	else:
-		print("No wall detected")
-		print("================================")
+		#print("No wall detected")
+		#print("================================")
 		return false
 
 func _on_area_entered(area):
