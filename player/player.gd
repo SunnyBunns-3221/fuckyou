@@ -36,7 +36,7 @@ var isdashing = false
 var dashtimer = 0.0
 var dashcooldowntimer = 0.0
 @onready var dashbar = $DashBar
-@export var dashrechargedelay = 0.5
+@export var dashrechargedelay = 1
 var dashdelaytimer = 0.0
 
 
