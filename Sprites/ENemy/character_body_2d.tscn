@@ -48,7 +48,7 @@ points = PackedVector2Array(25, 34)
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
 offset_left = -72.0
-offset_top = -47.0
+offset_top = -27.0
 offset_right = 81.0
 offset_bottom = -20.0
 fill_mode = 1

@@ -2,11 +2,13 @@ extends CharacterBody2D
 
 @export var speed = 300.0
 @export var health = 100
+@export var runspeed = 500.0
 
 # Projectile system
 @export var projectile_scene: PackedScene
 @export var fire_rate = 0.2
 @export var shoot_radius = 35.0
+
 var can_fire = true
 
 # Animation system
@@ -26,6 +28,18 @@ var bob_timer = 0.0   # Timer for bobbing
 var screen_width = 1920
 var screen_height = 1080
 
+#Dash mechanic
+@export var dashspeed = 900.0
+@export var dashduration = 0.2
+@export var dashcooldown = 5.0
+var isdashing = false
+var dashtimer = 0.0
+var dashcooldowntimer = 0.0
+@onready var dashbar = $DashBar
+@export var dashrechargedelay = 0.5
+var dashdelaytimer = 0.0
+
+
 func _ready():
 	# Store original Y position for bobbing
 	original_y = sprite.position.y
@@ -44,6 +58,10 @@ func _physics_process(delta):
 	if Input.is_key_pressed(KEY_A): direction.x -= 1
 	if Input.is_key_pressed(KEY_S): direction.y += 1
 	if Input.is_key_pressed(KEY_W): direction.y -= 1
+	var current_speed = speed
+	if Input.is_key_pressed(KEY_SHIFT):
+		current_speed = runspeed
+	
 	
 	if direction.length() > 0:
 		direction = direction.normalized()
@@ -78,7 +96,31 @@ func _physics_process(delta):
 	# Apply bobbing effect
 	apply_bob_effect()
 	
-	velocity = direction * speed
+	if dashtimer > 0.0:
+		dashtimer -= delta
+		if dashtimer <= 0.0:
+			isdashing = false
+			dashdelaytimer = dashrechargedelay
+	if dashcooldowntimer > 0.0:
+		dashcooldowntimer -= delta
+		dashbar.value = dashcooldown - dashcooldowntimer
+	else:
+		dashbar.value = dashcooldown
+	
+	if Input.is_key_pressed(KEY_SPACE) and not isdashing and dashcooldowntimer <= 0.0 and direction.length() > 0:
+		isdashing = true
+		dashtimer = dashduration
+		dashcooldowntimer = dashcooldown
+	if isdashing:
+		current_speed =  dashspeed
+	velocity = direction * current_speed
+	if dashdelaytimer > 0.0:
+		dashdelaytimer -= delta
+	elif dashcooldowntimer > 0.0:
+		dashcooldowntimer -= delta
+	else:
+		dashbar.value = dashcooldown
+	
 	move_and_slide()
 	
 	# Keep player within screen bounds
