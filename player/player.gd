@@ -117,10 +117,7 @@ func _physics_process(delta):
 	else:
 		dashbar.value = dashcooldown
 	
-	if Input.is_key_pressed(KEY_SPACE) and not isdashing and dashcooldowntimer <= 0.0 and direction.length() > 0:
-		isdashing = true
-		dashtimer = dashduration
-		dashcooldowntimer = dashcooldown
+	
 	if isdashing:
 		current_speed =  dashspeed
 	velocity = direction * current_speed
@@ -217,8 +214,7 @@ func take_damage(amount = 10):
 	modulate = Color.WHITE
 	if health <= 0:
 		print("Game Over!")
-		get_tree().paused = true
-		
+		get_tree().paused = true	
 
 func teleport_to_door(new_position):
 	position = new_position
