@@ -69,9 +69,7 @@ func _physics_process(delta):
 	if Input.is_key_pressed(KEY_S): direction.y += 1
 	if Input.is_key_pressed(KEY_W): direction.y -= 1
 	var current_speed = speed
-	if Input.is_key_pressed(KEY_SHIFT):
-		current_speed = runspeed
-	if Input.is_key_pressed(KEY_SPACE) and not isdashing and dashcooldowntimer <= 0.0:
+	if Input.is_key_pressed(KEY_SHIFT) and not isdashing and dashcooldowntimer <= 0.0:
 		isdashing = true
 		dashtimer = dashduration
 		dashcooldowntimer = dashcooldown
