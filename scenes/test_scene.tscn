@@ -26,10 +26,9 @@ color = Color(0.180005, 0.180005, 0.180005, 1)
 position = Vector2(502, 277)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_j8ivh")]
-position = Vector2(198, 188)
+position = Vector2(305, 1024)
 collision_layer = 1
 collision_priority = 2.0
-motion_mode = 0
 
 [node name="wall3" parent="." instance=ExtResource("3_nd71p")]
 visibility_layer = 15

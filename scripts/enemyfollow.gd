@@ -19,8 +19,8 @@ var vision_cone = null
 var waiting_to_return = false
 var last_known_player_pos = Vector2.ZERO
 var patrol_points = [
-	Vector2(194, 1034),
-	Vector2(454, 1034),
+	Vector2(194, 1020),
+	Vector2(454, 1020),
 ]
 var patrol_index = 0
 
