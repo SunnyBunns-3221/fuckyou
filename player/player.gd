@@ -45,6 +45,14 @@ var dashdelaytimer = 0.0
 @onready var death_overlay = get_parent().get_node("CanvasLayer/DeathOverlay")
 @onready var death_label = get_parent().get_node("CanvasLayer/DeathLabel")
 
+@export var gravity = 1200.0
+@export var jump_force = -900.0
+var inair = false
+
+
+
+
+
 
 
 
@@ -62,17 +70,25 @@ func _ready():
 	play_animation("idle")
 
 func _physics_process(delta):
+	
+	velocity.y += gravity * delta
 	# Movement
 	var direction = Vector2.ZERO
 	if Input.is_key_pressed(KEY_D): direction.x += 1
 	if Input.is_key_pressed(KEY_A): direction.x -= 1
 	if Input.is_key_pressed(KEY_S): direction.y += 1
-	if Input.is_key_pressed(KEY_W): direction.y -= 1
 	var current_speed = speed
 	if Input.is_key_pressed(KEY_SHIFT) and not isdashing and dashcooldowntimer <= 0.0:
 		isdashing = true
 		dashtimer = dashduration
 		dashcooldowntimer = dashcooldown
+	if Input.is_key_pressed(KEY_W) and not inair:
+		velocity.y = jump_force
+	print("On floor:", is_on_floor(), "Velocity:", velocity)
+
+
+
+
 
 
 	
@@ -124,7 +140,7 @@ func _physics_process(delta):
 	
 	if isdashing:
 		current_speed =  dashspeed
-	velocity = direction * current_speed
+	velocity.x = direction.x * current_speed
 	if dashdelaytimer > 0.0:
 		dashdelaytimer -= delta
 	elif dashcooldowntimer > 0.0:
@@ -132,7 +148,16 @@ func _physics_process(delta):
 	else:
 		dashbar.value = dashcooldown
 	
-	move_and_slide()
+	
+	velocity.x = direction.x * current_speed
+
+	move_and_slide()  # No arguments!
+
+	inair = not is_on_floor()
+
+
+
+
 	
 	# Keep player within screen bounds
 	keep_in_bounds()

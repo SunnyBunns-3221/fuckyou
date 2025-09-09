@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cexgvpyexoxpq"]
+
+[ext_resource type="Texture2D" uid="uid://1k8q7n7ttxjt" path="res://Sprites/ENemy/Enemy Health bar assets/HEALTHBAR NEW SMALL BASE.png" id="1_oj3tl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cgngl"]
+size = Vector2(1918, 29)
+
+[node name="StaticBody2D" type="StaticBody2D"]
+collision_layer = 255
+collision_mask = 255
+
+[node name="HealthbarNewSmallBase" type="Sprite2D" parent="."]
+position = Vector2(960.25, 10)
+scale = Vector2(6.11981, 1)
+texture = ExtResource("1_oj3tl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(958, 15.5)
+shape = SubResource("RectangleShape2D_cgngl")

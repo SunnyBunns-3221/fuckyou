@@ -131,7 +131,6 @@ size = Vector2(1.29688, 4.0625)
 position = Vector2(-16, -16)
 collision_layer = 9
 collision_mask = 10
-motion_mode = 1
 slide_on_ceiling = false
 script = ExtResource("1_4flbx")
 projectile_scene = ExtResource("2_rkbax")

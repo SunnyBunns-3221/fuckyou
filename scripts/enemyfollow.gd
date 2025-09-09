@@ -8,7 +8,7 @@ extends CharacterBody2D
 @export var shoot_radius = 25.0
 @onready var health_bar = $ProgressBar
 @onready var nav_agent = $NavigationAgent2D
-
+@export var gravity = 800.0 
 enum State { PATROL, CHASE, RETURN, WAIT }
 
 var player = null
@@ -19,10 +19,8 @@ var vision_cone = null
 var waiting_to_return = false
 var last_known_player_pos = Vector2.ZERO
 var patrol_points = [
-	Vector2(194, 139),
-	Vector2(194, 450),
-	Vector2(454, 450),
-	Vector2(429, 139)
+	Vector2(194, 1034),
+	Vector2(454, 1034),
 ]
 var patrol_index = 0
 
@@ -45,6 +43,13 @@ func _physics_process(delta):
 	# Update vision direction based on movement
 	if velocity.length() > 0:
 		vision_cone.update_vision_direction(velocity)
+	if not player:
+		return
+	
+	if not is_on_floor():
+		velocity.y += gravity * delta
+	else:
+		velocity.y = 0
 	
 	# Don't move if touching player
 	if touching_player:
