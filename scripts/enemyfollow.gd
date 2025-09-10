@@ -43,13 +43,7 @@ func _physics_process(delta):
 	# Update vision direction based on movement
 	if velocity.length() > 0:
 		vision_cone.update_vision_direction(velocity)
-	if not player:
-		return
 	
-	if not is_on_floor():
-		velocity.y += gravity * delta
-	else:
-		velocity.y = 0
 	
 	# Don't move if touching player
 	if touching_player:
