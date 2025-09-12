@@ -85,7 +85,7 @@ func chase_and_shoot():
 		velocity = direction * speed
 		
 		# Shoot at player if we can
-		if can_fire and distance > 50:
+		if can_fire and distance > 0:
 			fire_at_player()
 
 func fire_at_player():
