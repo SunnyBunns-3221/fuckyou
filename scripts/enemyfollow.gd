@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var speed = 150.0
-@export var detection_range = 300.0
+@export var detection_range = 2000.0
 @export var health = 100
 @export var fire_rate = 1.0
 @export var projectile_scene: PackedScene
@@ -9,7 +9,7 @@ extends CharacterBody2D
 @onready var health_bar = $ProgressBar
 @onready var nav_agent = $NavigationAgent2D
 @export var gravity = 800.0 
-enum State { PATROL, CHASE, RETURN, WAIT }
+enum State { PATROL, CHASE, RETURN, WAIT, INVESTIGATE }
 
 var player = null
 var current_state = State.PATROL
@@ -52,16 +52,19 @@ func _physics_process(delta):
 	
 	# Check if we can see the player
 	if vision_cone.can_see_target(player.global_position):
-		last_known_player_pos = player.global_position
-		current_state = State.CHASE
-		chase_and_shoot()
+		if current_state != State.CHASE:
+			last_known_player_pos = player.global_position
+			current_state = State.INVESTIGATE
 	else:
-		# If we can't see player and we were chasing
-		if current_state == State.CHASE:
+		if current_state == State.INVESTIGATE:
+			current_state = State.WAIT
+			start_return_delay()
+		elif current_state == State.CHASE:
 			if not waiting_to_return:
 				waiting_to_return = true
 				current_state = State.WAIT
 				start_return_delay()
+
 	
 	# Handle different states
 	match current_state:
@@ -74,6 +77,8 @@ func _physics_process(delta):
 		State.CHASE:
 			# Chase behavior is handled above
 			pass
+		State.INVESTIGATE:
+			investigate_behavior()
 	
 	move_and_slide()
 
@@ -201,3 +206,23 @@ func start_return_delay():
 	last_known_player_pos = Vector2.ZERO
 	current_state = State.RETURN
 	waiting_to_return = false
+
+func investigate_behavior():
+	if vision_cone.can_see_target(player.global_position):
+		current_state = State.CHASE
+		chase_and_shoot()
+		return
+	
+	# Set target if not already set
+	if nav_agent.get_target_position() != last_known_player_pos:
+		nav_agent.set_target_position(last_known_player_pos)
+		nav_agent.force_update_path()
+	
+	# Move along path
+	if not nav_agent.is_navigation_finished():
+		var next_pos = nav_agent.get_next_path_position()
+		velocity = (next_pos - global_position).normalized() * speed
+	else:
+		# Reached the last known position
+		current_state = State.WAIT
+		start_return_delay()

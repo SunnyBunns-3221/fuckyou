@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var speed = 300.0
-@export var health = 100
+@export var health = 10000
 @export var runspeed = 500.0
 
 # Projectile system
