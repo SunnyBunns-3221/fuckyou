@@ -1,7 +1,11 @@
 extends Area2D
 
 @export var vision_angle = 60.0
+
 @export var vision_range = 300.0
+
+
+
 @export var vision_color = Color(1, 1, 0, 0.3)
 
 var enemy = null
