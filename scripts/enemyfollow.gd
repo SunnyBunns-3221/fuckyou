@@ -1,14 +1,18 @@
 extends CharacterBody2D
 
 @export var speed = 150.0
-@export var detection_range = 300.0
+@export var detection_range = 2000.0
 @export var health = 100
 @export var fire_rate = 1.0
 @export var projectile_scene: PackedScene
 @export var shoot_radius = 50.0
 @onready var health_bar = $ProgressBar
 @export var gravity = 800.0 
+<<<<<<< HEAD
 enum State { PATROL, CHASE }
+=======
+enum State { PATROL, CHASE, RETURN, WAIT, INVESTIGATE }
+>>>>>>> e74be429489709d9dd3ffc9b4abbb82498aa2c99
 
 var player = null
 var current_state = State.PATROL
@@ -44,6 +48,7 @@ func _physics_process(delta):
 		move_and_slide()
 		return
 	
+<<<<<<< HEAD
 	# Simple distance-based detection
 	var distance_to_player = global_position.distance_to(player.global_position)
 	
@@ -53,6 +58,37 @@ func _physics_process(delta):
 	else:
 		current_state = State.PATROL
 		patrol_behavior()
+=======
+	# Check if we can see the player
+	if vision_cone.can_see_target(player.global_position):
+		if current_state != State.CHASE:
+			last_known_player_pos = player.global_position
+			current_state = State.INVESTIGATE
+	else:
+		if current_state == State.INVESTIGATE:
+			current_state = State.WAIT
+			start_return_delay()
+		elif current_state == State.CHASE:
+			if not waiting_to_return:
+				waiting_to_return = true
+				current_state = State.WAIT
+				start_return_delay()
+
+	
+	# Handle different states
+	match current_state:
+		State.PATROL:
+			patrol_behavior()
+		State.RETURN:
+			return_to_patrol()
+		State.WAIT:
+			velocity = Vector2.ZERO
+		State.CHASE:
+			# Chase behavior is handled above
+			pass
+		State.INVESTIGATE:
+			investigate_behavior()
+>>>>>>> e74be429489709d9dd3ffc9b4abbb82498aa2c99
 	
 	move_and_slide()
 
@@ -132,7 +168,59 @@ func patrol_behavior():
 		patrol_index = (patrol_index + 1) % patrol_points.size()
 		target_point = patrol_points[patrol_index]
 	
+<<<<<<< HEAD
 	# Move towards current patrol point
 	var direction = (target_point - global_position).normalized()
 	# Only apply horizontal movement, preserve vertical velocity (gravity)
 	velocity.x = direction.x * speed
+=======
+	var next_pos = nav_agent.get_next_path_position()
+	velocity = (next_pos - global_position).normalized() * speed
+
+func return_to_patrol():
+	var closest_point = patrol_points[0]
+	var min_dist = global_position.distance_to(closest_point)
+	
+	for point in patrol_points:
+		var dist = global_position.distance_to(point)
+		if dist < min_dist:
+			min_dist = dist
+			closest_point = point
+	
+	nav_agent.set_target_position(closest_point)
+	
+	var next_pos = nav_agent.get_next_path_position()
+	velocity = (next_pos - global_position).normalized() * speed
+	
+	if nav_agent.is_navigation_finished():
+		current_state = State.PATROL
+		patrol_index = patrol_points.find(closest_point)
+		nav_agent.set_target_position(patrol_points[patrol_index])
+
+func start_return_delay():
+	velocity = Vector2.ZERO  # Stop movement
+	await get_tree().create_timer(2.0).timeout
+	last_known_player_pos = Vector2.ZERO
+	current_state = State.RETURN
+	waiting_to_return = false
+
+func investigate_behavior():
+	if vision_cone.can_see_target(player.global_position):
+		current_state = State.CHASE
+		chase_and_shoot()
+		return
+	
+	# Set target if not already set
+	if nav_agent.get_target_position() != last_known_player_pos:
+		nav_agent.set_target_position(last_known_player_pos)
+		nav_agent.force_update_path()
+	
+	# Move along path
+	if not nav_agent.is_navigation_finished():
+		var next_pos = nav_agent.get_next_path_position()
+		velocity = (next_pos - global_position).normalized() * speed
+	else:
+		# Reached the last known position
+		current_state = State.WAIT
+		start_return_delay()
+>>>>>>> e74be429489709d9dd3ffc9b4abbb82498aa2c99
