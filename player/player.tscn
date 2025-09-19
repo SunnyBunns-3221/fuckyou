@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cw8yp5kdjaodc"]
+[gd_scene load_steps=12 format=3 uid="uid://cw8yp5kdjaodc"]
 
 [ext_resource type="Script" uid="uid://bv6iquburfu5b" path="res://player/player.gd" id="1_4flbx"]
 [ext_resource type="PackedScene" uid="uid://cqe1alvoih527" path="res://projectile.tscn" id="2_rkbax"]
@@ -44,6 +44,62 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(),
 "update": 1,
 "values": []
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_slide_left"]
+resource_name = "slide_left"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Vector2i(0, 4), Vector2i(0, 5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_slide_right"]
+resource_name = "slide_right"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Vector2i(0, 4), Vector2i(0, 5)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -120,6 +176,8 @@ tracks/1/keys = {
 _data = {
 &"RESET": SubResource("Animation_g1dw6"),
 &"idle": SubResource("Animation_rkbax"),
+&"slide_left": SubResource("Animation_slide_left"),
+&"slide_right": SubResource("Animation_slide_right"),
 &"walk_left": SubResource("Animation_yw30f"),
 &"walk_right": SubResource("Animation_qjkh3")
 }
@@ -128,9 +186,9 @@ _data = {
 size = Vector2(1.29688, 4.0625)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
-position = Vector2(-16, -16)
-collision_layer = 9
-collision_mask = 10
+position = Vector2(-23, -17)
+collision_mask = 2
+motion_mode = 1
 slide_on_ceiling = false
 script = ExtResource("1_4flbx")
 projectile_scene = ExtResource("2_rkbax")
@@ -139,13 +197,13 @@ projectile_scene = ExtResource("2_rkbax")
 libraries = {
 &"": SubResource("AnimationLibrary_qjkh3")
 }
-speed_scale = 0.3
+speed_scale = 0.35
 metadata/_edit_use_anchors_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(16, 15)
 texture = ExtResource("3_g1dw6")
-hframes = 4
+hframes = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(27.25, 14)

@@ -18,48 +18,19 @@ var facing_direction = Vector2.RIGHT
 var is_moving = false
 var current_animation = "idle"
 
-# Bobbing system
-var bob_amount = 4.0  # How many pixels to bob up/down
-var bob_speed = 20.0   # How fast dthe bob happens
-var original_y = 0.0  # Store original Y position
-var bob_timer = 0.0   # Timer for bobbing
-
 # Screen boundaries
 var screen_width = 1920
 var screen_height = 1080
 
-#Dash mechanic
-@export var dashspeed = 900.0
-@export var dashduration = 0.2
-@export var dashcooldown = 5.0
-var isdashing = false
-var dashtimer = 0.0
-var dashcooldowntimer = 0.0
-@onready var dashbar = $DashBar
-@export var dashrechargedelay = 1
-var dashdelaytimer = 0.0
-
 @onready var healthbar = $Healthbar
 
-#deathscreen
-@onready var death_overlay = get_parent().get_node("CanvasLayer/DeathOverlay")
-@onready var death_label = get_parent().get_node("CanvasLayer/DeathLabel")
-
-@export var gravity = 1200.0
-@export var jump_force = -900.0
-var inair = false
-
-
-
-
-
-
-
+@export var gravity = 600.0
+@export var jump_velocity = -600.0
+var vertical_velocity = 0.0
+var is_jumping = false
+var jump_start_y = 0.0
 
 func _ready():
-	# Store original Y position for bobbing
-	original_y = sprite.position.y
-	
 	healthbar.value = health
 	
 	# Load projectile scene
@@ -70,94 +41,38 @@ func _ready():
 	play_animation("idle")
 
 func _physics_process(delta):
+	# Handle jump input
+	if (Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_W)) and not is_jumping:
+		if is_on_floor():
+			is_jumping = true
+			jump_start_y = global_position.y
+			vertical_velocity = jump_velocity
 	
-	velocity.y += gravity * delta
-	# Movement
-	var direction = Vector2.ZERO
-	if Input.is_key_pressed(KEY_D): direction.x += 1
-	if Input.is_key_pressed(KEY_A): direction.x -= 1
-	if Input.is_key_pressed(KEY_S): direction.y += 1
-	var current_speed = speed
-	if Input.is_key_pressed(KEY_SHIFT) and not isdashing and dashcooldowntimer <= 0.0:
-		isdashing = true
-		dashtimer = dashduration
-		dashcooldowntimer = dashcooldown
-	if Input.is_key_pressed(KEY_W) and not inair:
-		velocity.y = jump_force
-	print("On floor:", is_on_floor(), "Velocity:", velocity)
-
-
-
-
-
-
+	# Apply gravity to vertical velocity
+	vertical_velocity += gravity * delta
 	
+	# Apply vertical movement (direct position)
+	global_position.y += vertical_velocity * delta
 	
-	if direction.length() > 0:
-		direction = direction.normalized()
-		is_moving = true
-		
-		# Update bobbing timer
-		bob_timer += delta * bob_speed
-		
-		# Update facing direction for animation
-		if abs(direction.x) > abs(direction.y):
-			if direction.x > 0:
-				facing_direction = Vector2.RIGHT
-				play_animation("walk_right")
-			else:
-				facing_direction = Vector2.LEFT
-				play_animation("walk_left")
-		else:
-			if direction.y > 0:
-				facing_direction = Vector2.DOWN
-				play_animation("walk_right")
-			else:
-				facing_direction = Vector2.UP
-				play_animation("walk_left")
-	else:
-		is_moving = false
-		bob_timer = 0.0  # Reset bob timer when stopped
-		
-		# Return to idle animation
-		if current_animation != "idle":
-			play_animation("idle")
+	# Reset jump when back on ground
+	if is_jumping and global_position.y >= jump_start_y:
+		is_jumping = false
+		vertical_velocity = 0.0
+		global_position.y = jump_start_y
 	
-	# Apply bobbing effect
-	apply_bob_effect()
+	# Handle horizontal movement
+	var direction = 0
+	if Input.is_key_pressed(KEY_D) or Input.is_action_pressed("ui_right"):
+		direction += 1
+	if Input.is_key_pressed(KEY_A) or Input.is_action_pressed("ui_left"):
+		direction -= 1
 	
-	if dashtimer > 0.0:
-		dashtimer -= delta
-		if dashtimer <= 0.0:
-			isdashing = false
-			dashdelaytimer = dashrechargedelay
-	if dashcooldowntimer > 0.0:
-		dashcooldowntimer -= delta
-		dashbar.value = dashcooldown - dashcooldowntimer
-	else:
-		dashbar.value = dashcooldown
+	# Apply horizontal movement (direct position)
+	if direction != 0:
+		global_position.x += direction * speed * delta
 	
-	
-	if isdashing:
-		current_speed =  dashspeed
-	velocity.x = direction.x * current_speed
-	if dashdelaytimer > 0.0:
-		dashdelaytimer -= delta
-	elif dashcooldowntimer > 0.0:
-		dashcooldowntimer -= delta
-	else:
-		dashbar.value = dashcooldown
-	
-	
-	velocity.x = direction.x * current_speed
-
-	move_and_slide()  # No arguments!
-
-	inair = not is_on_floor()
-
-
-
-
+	# Move the character (for collision detection)
+	move_and_slide()
 	
 	# Keep player within screen bounds
 	keep_in_bounds()
@@ -166,15 +81,6 @@ func _physics_process(delta):
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and can_fire:
 		fire_projectile()
 
-func apply_bob_effect():
-	if is_moving:
-		# Create smooth up/down bobbing motion
-		var bob_offset = sin(bob_timer) * bob_amount
-		sprite.position.y = original_y + bob_offset
-	else:
-		# Return to original position when not moving
-		sprite.position.y = original_y
-
 func play_animation(anim_name):
 	if not animation_player or current_animation == anim_name:
 		return
@@ -182,9 +88,9 @@ func play_animation(anim_name):
 	current_animation = anim_name
 	
 	# Handle sprite flipping for left/right
-	if anim_name == "walk_left":
+	if anim_name == "walk_left" or anim_name == "slide_left":
 		sprite.flip_h = true
-	elif anim_name == "walk_right":
+	elif anim_name == "walk_right" or anim_name == "slide_right":
 		sprite.flip_h = false
 	
 	# Play the animation

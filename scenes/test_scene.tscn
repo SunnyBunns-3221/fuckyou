@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://1noqm562x32s" path="res://Sprites/ENemy/character_body_2d.tscn" id="2_j8ivh"]
 [ext_resource type="PackedScene" uid="uid://brywyduwnmyj1" path="res://wall.tscn" id="3_nd71p"]
 [ext_resource type="Shader" uid="uid://cixabiwm7xh" path="res://scenes/test_scene.gdshader" id="4_7ddre"]
-[ext_resource type="PackedScene" uid="uid://cexgvpyexoxpq" path="res://floor.tscn" id="5_qjeyg"]
+[ext_resource type="PackedScene" uid="uid://cxi8fa67ejfbw" path="res://floor.tscn" id="5_qjeyg"]
 
 [sub_resource type="GDScript" id="GDScript_qjeyg"]
 
@@ -15,24 +15,24 @@ script = SubResource("GDScript_qjeyg")
 [node name="Node2D" type="Node2D"]
 
 [node name="ColorRect" type="ColorRect" parent="."]
-custom_minimum_size = Vector2(1920, 1080)
+custom_minimum_size = Vector2(1080, 720)
 offset_left = 5.0
 offset_top = 1.0
-offset_right = 1925.0
-offset_bottom = 1081.0
+offset_right = 1085.0
+offset_bottom = 721.0
 color = Color(0.180005, 0.180005, 0.180005, 1)
 
 [node name="player" parent="." instance=ExtResource("1_6e84v")]
-position = Vector2(502, 277)
+position = Vector2(527, 275)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_j8ivh")]
-position = Vector2(305, 1024)
+position = Vector2(225, 194)
 collision_layer = 1
 collision_priority = 2.0
 
-[node name="wall3" parent="." instance=ExtResource("3_nd71p")]
+[node name="wall10" parent="." instance=ExtResource("3_nd71p")]
 visibility_layer = 15
-position = Vector2(868, 834)
+position = Vector2(453, 491)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -55,5 +55,5 @@ text = "YOU DIED"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StaticBody2D" parent="." instance=ExtResource("5_qjeyg")]
-position = Vector2(0, 1049)
+[node name="Node2D" parent="." instance=ExtResource("5_qjeyg")]
+position = Vector2(5, 683)

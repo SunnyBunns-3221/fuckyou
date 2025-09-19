@@ -1,7 +1,7 @@
 [gd_scene load_steps=2 format=3 uid="uid://brywyduwnmyj1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oh6kn"]
-size = Vector2(875.248, 209.761)
+size = Vector2(2472.27, 62.6088)
 
 [node name="wall" type="StaticBody2D"]
 light_mask = 8
@@ -11,12 +11,12 @@ collision_mask = 15
 
 [node name="ColorRect" type="ColorRect" parent="."]
 custom_minimum_size = Vector2(64, 64)
-offset_right = 64.0
-offset_bottom = 218.0
+offset_right = 169.0
+offset_bottom = 64.0
 scale = Vector2(1.16, 1)
 color = Color(0.219501, 0.219501, 0.219501, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(36.3054, 108.789)
+position = Vector2(98, 32)
 scale = Vector2(0.0792794, 1.02222)
 shape = SubResource("RectangleShape2D_oh6kn")
